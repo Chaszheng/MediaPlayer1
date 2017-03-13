@@ -1,14 +1,11 @@
-package com.volcano.player.activity;
+package com.volcano.player.fragment;
 
-
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Gravity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.widget.Toast;
-
+import android.view.ViewGroup;
 
 import com.volcano.player.R;
 import com.volcano.player.Util.Utils;
@@ -16,31 +13,29 @@ import com.volcano.player.interfaces.UiOpration;
 
 /**
  * Created by admin on 2017/3/13.
- * activity的基类,其他的activityd都应该继承这个基类
- * 1. 处理共同操作,避免重复操作
- * 2. 代码规范
- * 3. 提供常用的方法和变量,避免代码重复,方便调用
+ * Fragment的基类,其他Fragment 继承这个类
  */
 
-public abstract class BaseActivity extends FragmentActivity implements UiOpration {
+public  abstract class BaseFragment extends Fragment implements UiOpration {
+
+    private View rootview;
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(getLayoutResID());
-//        android.R.id.content 这个可以获取Activity的根view
-        View rootview = findViewById(android.R.id.content);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        rootview = inflater.inflate(getLayoutResID(),null);
         Utils.setButtonOnClickListener(rootview,this);
         initView();
         initListener();
         initData();
+        return rootview;
     }
-/**
- * 查找View,这个方法可以省去强转操作
- * @param id 需要强转的id
- */
+    /**
+     * 查找View,这个方法可以省去强转操作
+     * @param id 需要强转的id
+     */
     public <T> T findView(int id){
-        T view = (T) findViewById(id);
+        T view = (T) rootview.findViewById(id);
         return view;
     }
     /**
@@ -48,7 +43,7 @@ public abstract class BaseActivity extends FragmentActivity implements UiOpratio
      * @param text 显示的文本
      */
     public void showToast(String text){
-        Utils.showToast(this, text);
+        Utils.showToast(getActivity(), text);
     }
     /**
      * 实现点击事件
@@ -60,7 +55,7 @@ public abstract class BaseActivity extends FragmentActivity implements UiOpratio
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_back:  //处理共同操作 退出
-                finish();
+                getActivity().finish();
                 break;
             default:
                 // 如果单击的不是返回按钮,则还是由子类去完成处理

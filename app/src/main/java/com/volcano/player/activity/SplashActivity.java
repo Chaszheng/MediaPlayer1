@@ -82,4 +82,5 @@ public class SplashActivity extends BaseActivity {
         }
         return super.onTouchEvent(event);
     }
+
 }
